@@ -1,0 +1,11 @@
+default_platform(:android)
+
+platform :android do
+  desc "Build Flutter App Bundle"
+
+  lane :build_flutter do
+    sh("cd .. && flutter clean")
+    sh("cd .. && flutter pub get")
+    sh("cd .. && flutter build appbundle")
+  end
+end
