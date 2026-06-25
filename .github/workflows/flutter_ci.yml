@@ -1,4 +1,4 @@
-name: Flutter CI
+name: Flutter CI/CD
 
 on:
   push:
@@ -6,11 +6,11 @@ on:
       - master
 
 jobs:
-  build:
+  build-and-distribute:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Flutter
@@ -18,11 +18,24 @@ jobs:
         with:
           channel: stable
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: flutter pub get
 
-      - name: Analyze Code
+      - name: Analyze code
         run: flutter analyze
+
+      - name: Run tests
+        run: flutter test
 
       - name: Build APK
         run: flutter build apk --release
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Upload to Firebase App Distribution
+        run: |
+          firebase appdistribution:distribute build/app/outputs/flutter-apk/app-release.apk \
+            --app 1:577439199236:android:3a45f689b269d76b394551 \
+            --groups testers \
+            --token ${{ secrets.FIREBASE_TOKEN }}
